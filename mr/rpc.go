@@ -3,8 +3,6 @@ package mr
 //
 // RPC definitions.
 //
-// remember to capitalize all names.
-//
 
 import (
 	"os"
@@ -20,11 +18,6 @@ const (
 	FAILED
 )
 
-//
-// example to show how to declare the arguments
-// and reply for an RPC.
-//
-
 type AssignWorkerIDArgs struct {
 }
 
@@ -32,8 +25,6 @@ type AssignWorkerIDReply struct {
 	WorkerID int32
 	NReduce  int
 }
-
-// Add your RPC definitions here.
 
 type AllotTaskArgs struct {
 	WorkerName string

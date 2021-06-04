@@ -12,9 +12,6 @@ import (
 	"time"
 )
 
-//
-// Map functions return a slice of KeyValue.
-//
 type KeyValue struct {
 	Key   string
 	Value string
@@ -33,6 +30,10 @@ var WorkerName string
 var WorkerID int32
 var NReduce int
 
+const (
+	outputDir = "output"
+)
+
 //
 // use ihash(key) % NReduce to choose the reduce
 // task number for each KeyValue emitted by Map.
@@ -44,7 +45,7 @@ func ihash(key string) int {
 }
 
 //
-// main/mrworker.go calls this function.
+// worker/worker.go calls this function.
 //
 func Worker(mapf func(string, string) []KeyValue,
 	reducef func(string, []string) string) {
@@ -56,10 +57,6 @@ func Worker(mapf func(string, string) []KeyValue,
 	for {
 		// Get a task
 		task := CallAllotTask()
-		if WorkerID == 1 {
-			log.Println(".....Pausing....")
-			time.Sleep(15 * time.Second)
-		}
 
 		if task.IsTaskQueued && task.TaskType == "map" {
 			intermediateKV := []KeyValue{}
@@ -81,7 +78,7 @@ func Worker(mapf func(string, string) []KeyValue,
 			// Initialise all the maps
 			for i := 0; i < NReduce; i++ {
 				intermediateKVMap[i] = []KeyValue{}
-				intermediateFilesMap[i] = fmt.Sprintf("mr-intermediate-%d-%d.json", task.MapID, i)
+				intermediateFilesMap[i] = fmt.Sprintf("%s/mr-intermediate-%d-%d.json", outputDir, task.MapID, i)
 			}
 
 			// Bucketise the key-value pairs according to the number of reduce tasks
@@ -93,10 +90,10 @@ func Worker(mapf func(string, string) []KeyValue,
 			// Write to the reduce files
 			for i := 0; i < NReduce; i++ {
 
-				oFileName := intermediateFilesMap[i]
+				oFileName := fmt.Sprintf("%s", intermediateFilesMap[i])
 				oFile, err := os.OpenFile(oFileName, os.O_CREATE|os.O_WRONLY, 0644)
 				if err != nil {
-					log.Println("Error opening the write file", oFileName)
+					log.Println("Error opening the intermediate file", oFileName)
 				}
 				jsonEnc := json.NewEncoder(oFile)
 				jsonEnc.Encode(intermediateKVMap[i])
@@ -137,10 +134,10 @@ func Worker(mapf func(string, string) []KeyValue,
 			}
 			sort.Sort(ByKey(kva))
 
-			outputFileName := fmt.Sprintf("mr-out-%d", task.ReduceID)
+			outputFileName := fmt.Sprintf("%s/mr-out-%d", outputDir, task.ReduceID)
 			outputFile, err := os.OpenFile(outputFileName, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 			if err != nil {
-				log.Println("Error opening the file", outputFileName)
+				log.Println("Error opening output the file", outputFileName)
 				continue
 			}
 

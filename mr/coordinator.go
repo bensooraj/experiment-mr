@@ -34,7 +34,6 @@ type Coordinator struct {
 	sync.Mutex
 }
 
-// Your code here -- RPC handlers for the worker to call.
 func (c *Coordinator) AssignWorkerID(args *AssignWorkerIDArgs, reply *AssignWorkerIDReply) error {
 	reply.WorkerID = c.WorkerIDCounter
 	reply.NReduce = c.NReduce
@@ -141,7 +140,7 @@ func (c *Coordinator) server() {
 }
 
 //
-// main/mrcoordinator.go calls Done() periodically to find out
+// coordinator/coordinator.go calls Done() periodically to find out
 // if the entire job has finished.
 //
 func (c *Coordinator) Done() bool {
@@ -209,7 +208,7 @@ func (c *Coordinator) taskHealthCheck() {
 
 //
 // create a Coordinator.
-// main/mrcoordinator.go calls this function.
+// coordinator/coordinator.go calls this function.
 // nReduce is the number of reduce tasks to use.
 //
 func MakeCoordinator(files []string, nReduce int) *Coordinator {
