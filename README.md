@@ -52,7 +52,7 @@ Intermediate files of the form `mr-intermediate-x-y.json` are writted by workers
 
 > `x` => map task number <br /> `y` => reduce task number
 
-The final output files (one for each reduce bucket) are written once every single map task is complete. The number of reduce buckets (currently set to 10) in controlled by the coordinator,
+The final output files (one for each reduce bucket) are written once every single map task is complete. The number of reduce buckets (currently set to 10) is controlled by the coordinator,
 
 ```golang
 # coordinator/coordinator.go
