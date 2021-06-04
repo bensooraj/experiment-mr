@@ -41,3 +41,20 @@ or 3 workers in parallel,
 $ make start-parallel-workers
 # Update the Makefile if you need to test with more parallel workers
 ```
+
+### 4. Output
+
+The input text files are located in the `data` directory prefixed with `pg-`.
+
+Both the intermediate and output files are written to the `output` directory.
+
+Intermediate files of the form `mr-intermediate-x-y.json` are writted by workers after each map task.
+
+> `x` => map task number <br /> `y` => reduce task number
+
+The final output files (one for each reduce bucket) are written once every single map task is complete. The number of reduce buckets (currently set to 10) in controlled by the coordinator,
+
+```golang
+# coordinator/coordinator.go
+m := mr.MakeCoordinator(os.Args[1:], 10)
+```
